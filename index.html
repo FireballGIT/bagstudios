@@ -266,8 +266,7 @@
             height: 16px;
         }
 
-        /* ==========  NEW LOGIN STUFF  ========== */
-        /* login widget */
+        /* ==========  NEW LOGIN WIDGET  ========== */
         .login-widget{position:fixed;top:15px;right:20px;z-index:2000}
         .login-btn{background:linear-gradient(45deg,#20B2AA,#48D1CC);color:#fff;border:none;padding:8px 16px;border-radius:20px;cursor:pointer;font-weight:bold;transition:.3s;box-shadow:0 4px 10px rgba(0,0,0,.2)}
         .login-btn:hover{transform:translateY(-2px);box-shadow:0 6px 15px rgba(0,0,0,.3)}
@@ -279,7 +278,7 @@
         .logout-btn{background:none;border:none;color:#fff;cursor:pointer;margin-left:8px;font-size:.9em;opacity:.8}
         .logout-btn:hover{opacity:1}
 
-        /* role-only sections (always in DOM, just hidden via nav) */
+        /* role-only sections (hidden by default) */
         #analytics, #server{display:none}
     </style>
 </head>
@@ -288,9 +287,9 @@
     <div class="login-widget" id="loginWidget">
         <button class="login-btn" onclick="toggleLoginMenu()">Login</button>
         <div class="login-dropdown" id="loginDropdown">
-            <button onclick="window.open('login.html')">Guest</button>
-            <button onclick="window.open('login.html')">Developer</button>
-            <button onclick="window.open('login.html')">Administrator</button>
+            <button onclick="login('guest')">Guest</button>
+            <button onclick="login('developer')">Developer</button>
+            <button onclick="login('admin')">Administrator</button>
         </div>
     </div>
 
@@ -431,7 +430,7 @@
             document.getElementById('userBadge').style.display='flex';
             document.getElementById('userLabel').textContent=role.charAt(0).toUpperCase()+role.slice(1);
             toggleLoginMenu();
-            if(role==='guest') location.href='login-guest.html';
+            if(role==='guest') location.href='login.html';   // <-- now goes to login.html
         }
         function logout(){
             sessionStorage.removeItem('role');
@@ -459,6 +458,16 @@
                 document.getElementById('userLabel').textContent=role.charAt(0).toUpperCase()+role.slice(1);
             }else buildNav('guest');
         });
+
+        /* ==========  ENCRYPTED USER DATA  ========== */
+        /*  simple XOR + base64  –  not crypto-secure, just obfuscated  */
+        (function(){
+            const raw = JSON.stringify({username:'Fireball',badge:'Administrator',password:'bagstudios25!'});
+            const key = 'BAGStudiosKey2025';
+            let enc='';
+            for(let i=0;i<raw.length;i++) enc+=String.fromCharCode(raw.charCodeAt(i)^key.charCodeAt(i%key.length));
+            window.userDataEnc = btoa(enc);   // store globally if you need it elsewhere
+        })();
     </script>
 </body>
 </html>
