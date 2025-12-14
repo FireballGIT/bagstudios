@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – BAG Studios</title>
+    <style>
+        /* ----  same background + utilities  ---- */
+        html,body{height:100%}
+        body{
+            margin:0;
+            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+            background:linear-gradient(135deg,#2E8B57 0%,#20B2AA 50%,#48D1CC 100%);
+            display:flex;align-items:center;justify-content:center;
+            color:#fff
+        }
+
+        /* ----  login card  ---- */
+        .login-card{
+            background:rgba(255,255,255,.15);
+            backdrop-filter:blur(10px);
+            padding:40px 35px;
+            border-radius:20px;
+            box-shadow:0 8px 32px rgba(0,0,0,.2);
+            border:1px solid rgba(255,255,255,.2);
+            width:100%;max-width:360px
+        }
+        .login-card h1{
+            margin:0 0 25px;
+            font-size:2em;
+            text-align:center;
+            background:linear-gradient(45deg,#fff,#e0f7fa);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            background-clip:text
+        }
+
+        /* ----  form fields  ---- */
+        .field{
+            margin-bottom:18px
+        }
+        .field label{display:block;margin-bottom:6px;font-weight:600}
+        .field input{
+            width:100%;
+            padding:10px 12px;
+            border:none;
+            border-radius:8px;
+            background:rgba(255,255,255,.9);
+            color:#333;
+            font-size:1em
+        }
+
+        /* ----  checkbox row  ---- */
+        .check-row{display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:.9em}
+
+        /* ----  buttons  ---- */
+        .btn{
+            width:100%;
+            padding:12px;
+            border:none;
+            border-radius:25px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:.3s;
+            box-shadow:0 4px 15px rgba(0,0,0,.2)
+        }
+        .btn-primary{
+            background:linear-gradient(45deg,#20B2AA,#48D1CC);
+            color:#fff
+        }
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+        .btn-secondary{
+            background:transparent;
+            color:#fff;
+            border:1px solid rgba(255,255,255,.4);
+            margin-top:10px
+        }
+        .btn-secondary:hover{background:rgba(255,255,255,.1)}
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1>BAG Studios Login</h1>
+
+        <form id="loginForm">
+            <div class="field">
+                <label for="user">Username</label>
+                <input type="text" id="user" name="user" required placeholder="Enter username">
+            </div>
+
+            <div class="field">
+                <label for="pass">Password</label>
+                <input type="password" id="pass" name="pass" required placeholder="Enter password">
+            </div>
+
+            <div class="check-row">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember me</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Log In</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='index.html'">Back to Site</button>
+        </form>
+    </div>
+
+    <script>
+        /* ----  simple fake login  ---- */
+        document.getElementById('loginForm').addEventListener('submit',function(e){
+            e.preventDefault();
+            const user = document.getElementById('user').value.trim();
+            const pass = document.getElementById('pass').value.trim();
+            const remember = document.getElementById('remember').checked;
+
+            /* totally fake check – replace with real logic */
+            let role = 'guest';
+            if(user==='admin' && pass==='admin123') role='admin';
+            else if(user==='dev' && pass==='dev123') role='developer';
+
+            sessionStorage.setItem('role',role);
+            if(remember) localStorage.setItem('role',role);
+
+            location.href='index.html';   // go home – index will read the role
+        });
+    </script>
+</body>
+</html>
