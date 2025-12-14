@@ -275,18 +275,18 @@
                     <div class="project-header">
                         <div class="project-name">${f.name}</div>
                         <div style="display:flex;align-items:center;gap:8px">
-                            <div class="version-tag">${f.tag}</div>
-                            ${(localStorage.getItem('role')||sessionStorage.getItem('role')||'')==='admin'?`<button class="del-btn" title="Delete project" onclick="deleteProject('${f.name}')">❌</button>`:''}
+                        <div class="version-tag">${f.tag}</div>
+                        ${(localStorage.getItem('role')||sessionStorage.getItem('role')||'')==='admin'?`<button class="del-btn" title="Delete project" onclick="deleteProject('${f.name}')">❌</button>`:''}
                         </div>
                     </div>
                     <div class="project-description">Admin-approved release.</div>
-                    <a href="#" class="download-btn">
-                        <svg class="download-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M10 3a1 1 0 011 1v5.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 9.586V4a1 1 0 011-1zM3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/></svg>
-                        Download
-                    </a>`;
-                box.appendChild(card);
-            });
-        }
+                    <button class="download-btn" onclick="downloadFile('${f.name}')">
+                    <svg class="download-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M10 3a1 1 0 011 1v5.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 9.586V4a1 1 0 011-1zM3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/></svg>
+                Download
+            </button>`;
+        box.appendChild(card);
+    });
+}
         function deleteProject(name){
             if(!confirm(`Delete “${name}” forever?`))return;
             let approved=JSON.parse(localStorage.getItem('approvedFiles')||'[]');
