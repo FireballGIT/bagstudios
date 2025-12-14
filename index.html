@@ -196,13 +196,114 @@
             transform: translateY(-3px);
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
+
+        /* Project card styles */
+        .project-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .project-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .version-tag {
+            background: linear-gradient(45deg, #FF6B35, #F7931E);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .project-description {
+            color: #e0f7fa;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(45deg, #20B2AA, #48D1CC);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .download-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ==========  NEW LOGIN STUFF  ========== */
+        /* login widget */
+        .login-widget{position:fixed;top:15px;right:20px;z-index:2000}
+        .login-btn{background:linear-gradient(45deg,#20B2AA,#48D1CC);color:#fff;border:none;padding:8px 16px;border-radius:20px;cursor:pointer;font-weight:bold;transition:.3s;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+        .login-btn:hover{transform:translateY(-2px);box-shadow:0 6px 15px rgba(0,0,0,.3)}
+        .login-dropdown{display:none;position:absolute;top:40px;right:0;background:rgba(0,139,139,.95);backdrop-filter:blur(10px);border-radius:10px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.3);min-width:150px}
+        .login-dropdown.show{display:block}
+        .login-dropdown button{width:100%;background:none;border:none;color:#fff;padding:12px;text-align:left;cursor:pointer;transition:.3s}
+        .login-dropdown button:hover{background:rgba(255,255,255,.2)}
+        .user-badge{position:fixed;top:15px;right:20px;background:rgba(255,255,255,.2);padding:8px 16px;border-radius:20px;font-weight:bold;display:none;align-items:center;gap:8px}
+        .logout-btn{background:none;border:none;color:#fff;cursor:pointer;margin-left:8px;font-size:.9em;opacity:.8}
+        .logout-btn:hover{opacity:1}
+
+        /* role-only sections (always in DOM, just hidden via nav) */
+        #analytics, #server{display:none}
     </style>
 </head>
 <body>
+    <!-- ==========  LOGIN WIDGET  ========== -->
+    <div class="login-widget" id="loginWidget">
+        <button class="login-btn" onclick="toggleLoginMenu()">Login</button>
+        <div class="login-dropdown" id="loginDropdown">
+            <button onclick="login('guest')">Guest</button>
+            <button onclick="login('developer')">Developer</button>
+            <button onclick="login('admin')">Administrator</button>
+        </div>
+    </div>
+
+    <!-- shown after login -->
+    <div class="user-badge" id="userBadge">
+        <span id="userLabel"></span>
+        <button class="logout-btn" onclick="logout()">⏻</button>
+    </div>
+
     <div class="container">
         <nav class="sidebar" id="sidebar">
             <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="navMenu">
                 <li class="nav-item">
                     <a href="#" class="nav-link active" onclick="showSection('home')">Home</a>
                 </li>
@@ -265,14 +366,35 @@
 
             <section id="projects" class="section">
                 <h1>Our Projects</h1>
-                <h2>Coming Soon!</h2>
-                <p>We're currently working on some exciting projects that will showcase our expertise in digital innovation. Stay tuned for updates on our latest creations and collaborations.</p>
-                <p>From mobile applications to web platforms, from branding initiatives to interactive experiences, our portfolio is growing every day. We can't wait to share our work with you.</p>
+                
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-name">BMODS</div>
+                        <div class="version-tag">v1.2.0</div>
+                    </div>
+                    <div class="project-description">
+                        A bundle of Python tools that you can use. With console tools, game utilities, and even file managing, you're set for your coding adventures!
+                    </div>
+                    <a href="#" class="download-btn">
+                        <svg class="download-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 3a1 1 0 011 1v5.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 9.586V4a1 1 0 011-1zM3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                        </svg>
+                        Download
+                    </a>
+                </div>
+
+                <h2>More Coming Soon!</h2>
+                <p>We're constantly working on new and exciting projects. Check back soon for more innovative tools and applications from BAG Studios.</p>
             </section>
+
+            <!-- ROLE-ONLY SECTIONS (hidden by default) -->
+            <section id="analytics" class="section"><h1>Analytics</h1><p>Total downloads: <strong id="dlCount">1 234 567</strong></p></section>
+            <section id="server" class="section"><h1>Server Data</h1><pre>CPU: 42 % | MEM: 3.2 / 8 GB<br>Uptime: 12d 07h 53m</pre></section>
         </main>
     </div>
 
     <script>
+        /* ==========  ORIGINAL SCRIPTS (untouched)  ========== */
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
@@ -281,20 +403,62 @@
         }
 
         function showSection(sectionId) {
-            // Hide all sections
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => section.classList.remove('active'));
-            
-            // Remove active class from all nav links
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => link.classList.remove('active'));
-            
-            // Show selected section
             document.getElementById(sectionId).classList.add('active');
-            
-            // Add active class to clicked nav link
             event.target.classList.add('active');
         }
+
+        /* ==========  NEW LOGIN STUFF  ========== */
+        const menus = {
+            guest:   ['home','crew','about','contact','projects'],
+            developer:['home','crew','about','contact','projects','analytics'],
+            admin:   ['home','crew','about','contact','projects','analytics','server']
+        };
+        const niceNames = {home:'Overview',crew:'Crew',about:'About',contact:'Contact',projects:'Projects',analytics:'Analytics',server:'Server Data'};
+
+        function toggleLoginMenu(){
+            document.getElementById('loginDropdown').classList.toggle('show');
+        }
+        function login(role){
+            const remember = confirm('Remember me on this device?');
+            sessionStorage.setItem('role',role);
+            if(remember) localStorage.setItem('role',role);
+            buildNav(role);
+            document.getElementById('loginWidget').style.display='none';
+            document.getElementById('userBadge').style.display='flex';
+            document.getElementById('userLabel').textContent=role.charAt(0).toUpperCase()+role.slice(1);
+            toggleLoginMenu();
+            if(role==='guest') location.href='login-guest.html';
+        }
+        function logout(){
+            sessionStorage.removeItem('role');
+            localStorage.removeItem('role');
+            location.reload();
+        }
+        function buildNav(role='guest'){
+            const nav = document.getElementById('navMenu');
+            nav.innerHTML='';
+            menus[role].forEach(id=>{
+                const li=document.createElement('li');li.className='nav-item';
+                li.innerHTML=`<a href="#" class="nav-link ${id==='home'?'active':''}" onclick="showSection('${id}')">${niceNames[id]}</a>`;
+                nav.appendChild(li);
+            });
+            const li=document.createElement('li');li.className='nav-item';
+            li.innerHTML=`<a href="https://reddit.com/r/bagstudios" class="nav-link reddit-link" target="_blank">Reddit</a>`;
+            nav.appendChild(li);
+        }
+        window.addEventListener('DOMContentLoaded',()=>{
+            const role = localStorage.getItem('role') || sessionStorage.getItem('role') || 'guest';
+            if(role!=='guest'){
+                buildNav(role);
+                document.getElementById('loginWidget').style.display='none';
+                document.getElementById('userBadge').style.display='flex';
+                document.getElementById('userLabel').textContent=role.charAt(0).toUpperCase()+role.slice(1);
+            }else buildNav('guest');
+        });
     </script>
 </body>
 </html>
