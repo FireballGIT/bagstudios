@@ -59,12 +59,16 @@
         .logout-btn{background:none;border:none;color:#fff;cursor:pointer;margin-left:8px;font-size:.9em;opacity:.8}
         .logout-btn:hover{opacity:1}
 
-        /* ==========  UPLOAD AREA  ========== */
+        /* ==========  UPLOAD / SERVER  ========== */
         .upload-area{border:2px dashed rgba(255,255,255,.6);border-radius:15px;padding:30px;text-align:center;margin-bottom:20px;transition:.3s}
         .upload-area:hover{border-color:#fff;background:rgba(255,255,255,.05)}
         #fileInput{display:none}
         .upload-label{cursor:pointer;font-weight:bold}
         .file-list{margin-top:15px;font-size:.9em}
+        .file-item{display:flex;align-items:center;gap:8px;margin:4px 0}
+        .check-btn{background:none;border:none;color:#4caf50;font-size:1.2em;cursor:pointer;transition:.2s}
+        .check-btn:hover{transform:scale(1.2)}
+        .check-btn.approved{color:#4caf50;cursor:default}
     </style>
 </head>
 <body>
@@ -150,23 +154,7 @@
 
             <section id="projects" class="section">
                 <h1>Our Projects</h1>
-                
-                <div class="project-card">
-                    <div class="project-header">
-                        <div class="project-name">BMODS</div>
-                        <div class="version-tag">v1.2.0</div>
-                    </div>
-                    <div class="project-description">
-                        A bundle of Python tools that you can use. With console tools, game utilities, and even file managing, you're set for your coding adventures!
-                    </div>
-                    <a href="#" class="download-btn">
-                        <svg class="download-icon" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 3a1 1 0 011 1v5.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 9.586V4a1 1 0 011-1zM3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
-                        </svg>
-                        Download
-                    </a>
-                </div>
-
+                <div id="approvedProjects"></div>
                 <h2>More Coming Soon!</h2>
                 <p>We're constantly working on new and exciting projects. Check back soon for more innovative tools and applications from BAG Studios.</p>
             </section>
@@ -212,14 +200,14 @@
         const niceNames = {home:'Overview',crew:'Crew',about:'About',contact:'Contact',projects:'Projects',analytics:'Analytics',upload:'Upload',badge:'Badge',server:'Server Data'};
 
         /* ----------  LOCKOUT + COPY/PASTE BLOCK  ---------- */
-        let failCount = 0;
+        let failCount = parseInt(sessionStorage.getItem('failCount')||'0');
         const MAX_FAIL = 3;
         function isLocked(){return sessionStorage.getItem('locked')==='true';}
         function lock(){sessionStorage.setItem('locked','true');alert('Account locked. Refresh the page to retry.');}
         document.addEventListener('copy',e=>{if(!isLocked()){lock();alert('Copy detected. Account locked.');}});
         document.addEventListener('paste',e=>{if(!isLocked()){lock();alert('Paste detected. Account locked.');}});
 
-        /* ----------  ENCRYPTED USER DATA (SHA-256)  ---------- */
+        /* ----------  ENCRYPTED USER DATA  ---------- */
         (function(){
             const raw = JSON.stringify({username:'Fireball',badge:'Admin',password:'be907206809759ecc573e74205c14e6205e68df0e2a9c1d4530065cf4c5fc2a2'});
             const key = 'BAGStudiosKey2025';
@@ -245,12 +233,52 @@
             const file = files[0];
             const list = document.getElementById('fileList');
             const item = document.createElement('div');
-            item.textContent = `📄 ${file.name}  (${(file.size/1024).toFixed(1)} KB)`;
+            item.className='file-item';
+            item.innerHTML=`📄 ${file.name}  (${(file.size/1024).toFixed(1)} KB)`;
+            /* admin checkmark */
+            const role = localStorage.getItem('role') || sessionStorage.getItem('role') || 'guest';
+            if(role==='admin'){
+                const chk=document.createElement('button');
+                chk.className='check-btn'; chk.innerHTML='✅'; chk.title='Approve for Projects';
+                chk.onclick=()=>approveFile(file.name,file.size,chk);
+                const approved=JSON.parse(localStorage.getItem('approvedFiles')||'[]');
+                if(approved.some(f=>f.name===file.name))chk.classList.add('approved');
+                item.appendChild(chk);
+            }
             list.appendChild(item);
             let uploaded = JSON.parse(sessionStorage.getItem('uploadedFiles')||'[]');
             uploaded.push({name:file.name,size:file.size,date:new Date().toISOString()});
             sessionStorage.setItem('uploadedFiles',JSON.stringify(uploaded));
             updateServerFiles();
+        }
+        function approveFile(name,size,btn){
+            if(btn.classList.contains('approved'))return;
+            const tag=prompt('Version tag for this file:','v1.0.0');
+            if(!tag)return;
+            let approved=JSON.parse(localStorage.getItem('approvedFiles')||'[]');
+            approved.push({name:name,size:size,tag:tag});
+            localStorage.setItem('approvedFiles',JSON.stringify(approved));
+            btn.classList.add('approved');
+            renderApprovedProjects();
+        }
+        function renderApprovedProjects(){
+            const box=document.getElementById('approvedProjects');
+            const approved=JSON.parse(localStorage.getItem('approvedFiles')||'[]');
+            box.innerHTML='';
+            approved.forEach(f=>{
+                const card=document.createElement('div'); card.className='project-card';
+                card.innerHTML=`
+                    <div class="project-header">
+                        <div class="project-name">${f.name}</div>
+                        <div class="version-tag">${f.tag}</div>
+                    </div>
+                    <div class="project-description">Admin-approved release.</div>
+                    <a href="#" class="download-btn">
+                        <svg class="download-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M10 3a1 1 0 011 1v5.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 9.586V4a1 1 0 011-1zM3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/></svg>
+                        Download
+                    </a>`;
+                box.appendChild(card);
+            });
         }
         function updateServerFiles(){
             const box = document.getElementById('serverPre');
@@ -305,6 +333,7 @@
                 document.getElementById('userLabel').textContent=role.charAt(0).toUpperCase()+role.slice(1);
                 loadBadge();
                 updateServerFiles();
+                renderApprovedProjects();
             }else buildNav('guest');
         });
     </script>
