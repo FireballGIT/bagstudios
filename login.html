@@ -5,121 +5,127 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login – BAG Studios</title>
     <style>
-        /* ----  same background + utilities  ---- */
-        html,body{height:100%}
-        body{
-            margin:0;
-            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-            background:linear-gradient(135deg,#2E8B57 0%,#20B2AA 50%,#48D1CC 100%);
-            display:flex;align-items:center;justify-content:center;
-            color:#fff
-        }
-
-        /* ----  login card  ---- */
-        .login-card{
-            background:rgba(255,255,255,.15);
-            backdrop-filter:blur(10px);
-            padding:40px 35px;
-            border-radius:20px;
-            box-shadow:0 8px 32px rgba(0,0,0,.2);
-            border:1px solid rgba(255,255,255,.2);
-            width:100%;max-width:360px
-        }
-        .login-card h1{
-            margin:0 0 25px;
-            font-size:2em;
-            text-align:center;
-            background:linear-gradient(45deg,#fff,#e0f7fa);
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-            background-clip:text
-        }
-
-        /* ----  form fields  ---- */
-        .field{
-            margin-bottom:18px
-        }
+        html,body{height:100%;margin:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#2E8B57 0%,#20B2AA 50%,#48D1CC 100%);display:flex;align-items:center;justify-content:center;color:#fff}
+        .login-card{background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:40px 35px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.2);width:100%;max-width:360px;text-align:center}
+        .login-card h1{margin:0 0 25px;font-size:2em;background:linear-gradient(45deg,#fff,#e0f7fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .tabs{display:flex;gap:10px;margin-bottom:20px}
+        .tab{flex:1;padding:8px;border:none;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;cursor:pointer;transition:.3s}
+        .tab.active{background:linear-gradient(45deg,#20B2AA,#48D1CC)}
+        .field{margin-bottom:18px;text-align:left}
         .field label{display:block;margin-bottom:6px;font-weight:600}
-        .field input{
-            width:100%;
-            padding:10px 12px;
-            border:none;
-            border-radius:8px;
-            background:rgba(255,255,255,.9);
-            color:#333;
-            font-size:1em
-        }
-
-        /* ----  checkbox row  ---- */
+        .field input{width:100%;padding:10px 12px;border:none;border-radius:8px;background:rgba(255,255,255,.9);color:#333;font-size:1em}
         .check-row{display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:.9em}
-
-        /* ----  buttons  ---- */
-        .btn{
-            width:100%;
-            padding:12px;
-            border:none;
-            border-radius:25px;
-            font-weight:bold;
-            cursor:pointer;
-            transition:.3s;
-            box-shadow:0 4px 15px rgba(0,0,0,.2)
-        }
-        .btn-primary{
-            background:linear-gradient(45deg,#20B2AA,#48D1CC);
-            color:#fff
-        }
+        .btn{width:100%;padding:12px;border:none;border-radius:25px;font-weight:bold;cursor:pointer;transition:.3s;box-shadow:0 4px 15px rgba(0,0,0,.2)}
+        .btn-primary{background:linear-gradient(45deg,#20B2AA,#48D1CC);color:#fff}
         .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
-        .btn-secondary{
-            background:transparent;
-            color:#fff;
-            border:1px solid rgba(255,255,255,.4);
-            margin-top:10px
-        }
+        .btn-secondary{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);margin-top:10px}
         .btn-secondary:hover{background:rgba(255,255,255,.1)}
+        .pane{display:none}
+        .pane.active{display:block}
+        .msg{color:#ff9;margin-top:10px;font-size:.9em}
     </style>
 </head>
 <body>
     <div class="login-card">
-        <h1>BAG Studios Login</h1>
+        <h1>BAG Studios</h1>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('login')">Login</button>
+            <button class="tab" onclick="switchTab('signup')">Sign Up (Guest)</button>
+        </div>
 
-        <form id="loginForm">
-            <div class="field">
-                <label for="user">Username</label>
-                <input type="text" id="user" name="user" required placeholder="Enter username">
-            </div>
+        <!-- LOGIN PANE -->
+        <div id="loginPane" class="pane active">
+            <form id="loginForm">
+                <div class="field">
+                    <label>Username</label>
+                    <input type="text" id="user" required placeholder="Enter username">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" id="pass" required placeholder="Enter password">
+                </div>
+                <div class="check-row">
+                    <input type="checkbox" id="remember"><label for="remember">Remember me</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Log In</button>
+                <div id="loginMsg" class="msg"></div>
+            </form>
+        </div>
 
-            <div class="field">
-                <label for="pass">Password</label>
-                <input type="password" id="pass" name="pass" required placeholder="Enter password">
-            </div>
+        <!-- SIGN-UP PANE (Guest only) -->
+        <div id="signupPane" class="pane">
+            <form id="signupForm">
+                <div class="field">
+                    <label>Choose Username</label>
+                    <input type="text" id="newUser" required placeholder="Guest user name">
+                </div>
+                <div class="field">
+                    <label>Choose Password</label>
+                    <input type="password" id="newPass" required placeholder="Min. 6 chars">
+                </div>
+                <button type="submit" class="btn btn-primary">Create Guest Account</button>
+                <div id="signupMsg" class="msg"></div>
+            </form>
+        </div>
 
-            <div class="check-row">
-                <input type="checkbox" id="remember" name="remember">
-                <label for="remember">Remember me</label>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Log In</button>
-            <button type="button" class="btn btn-secondary" onclick="location.href='index.html'">Back to Site</button>
-        </form>
+        <button class="btn btn-secondary" onclick="location.href='index.html'">Back to Site</button>
     </div>
 
     <script>
-        /* ----  simple fake login  ---- */
-        document.getElementById('loginForm').addEventListener('submit',function(e){
+        /* ----------  LOCKOUT + COPY/PASTE BLOCK  ---------- */
+        let failCount = parseInt(sessionStorage.getItem('failCount')||'0');
+        const MAX_FAIL = 3;
+        function isLocked(){return sessionStorage.getItem('locked')==='true';}
+        function lock(){sessionStorage.setItem('locked','true');alert('Account locked. Refresh the page to retry.');}
+        document.addEventListener('copy',e=>{if(!isLocked()){lock();alert('Copy detected. Account locked.');}});
+        document.addEventListener('paste',e=>{if(!isLocked()){lock();alert('Paste detected. Account locked.');}});
+
+        /* ----------  SHA-256 CHECK  ---------- */
+        async function SHA256(m){
+            const buf = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(m));
+            return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+        }
+
+        /* ----------  TAB SWITCH  ---------- */
+        function switchTab(name){
+            document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+            document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+            document.getElementById(name+'Pane').classList.add('active');
+            document.querySelector('.tab').classList.add('active');
+        }
+
+        /* ----------  LOGIN  ---------- */
+        document.getElementById('loginForm').addEventListener('submit',async(e)=>{
             e.preventDefault();
+            if(isLocked()){document.getElementById('loginMsg').textContent='Account locked.';return;}
             const user = document.getElementById('user').value.trim();
             const pass = document.getElementById('pass').value.trim();
-            const remember = document.getElementById('remember').checked;
+            const hash = await SHA256(pass);
+            /* hard-coded admin hash */
+            const correctHash = 'be907206809759ecc573e74205c14e6205e68df0e2a9c1d4530065cf4c5fc2a2';
+            if(user==='Fireball' && hash===correctHash){
+                sessionStorage.setItem('role','admin');
+                if(document.getElementById('remember').checked)localStorage.setItem('role','admin');
+                location.href='index.html';
+            }else{
+                failCount++;
+                sessionStorage.setItem('failCount',failCount);
+                if(failCount>=MAX_FAIL)lock();
+                document.getElementById('loginMsg').textContent='Wrong credentials. ('+failCount+'/'+MAX_FAIL+')';
+            }
+        });
 
-            /* totally fake check – replace with real logic */
-            let role = 'guest';
-            if(user==='admin' && pass==='admin123') role='admin';
-            else if(user==='dev' && pass==='dev123') role='developer';
-
-            sessionStorage.setItem('role',role);
-            if(remember) localStorage.setItem('role',role);
-
-            location.href='index.html';   // go home – index will read the role
+        /* ----------  SIGN-UP (Guest only)  ---------- */
+        document.getElementById('signupForm').addEventListener('submit',e=>{
+            e.preventDefault();
+            const user = document.getElementById('newUser').value.trim();
+            const pass = document.getElementById('newPass').value.trim();
+            if(pass.length<6){document.getElementById('signupMsg').textContent='Password min. 6 chars.';return;}
+            /* store guest creds (plaintext for demo) */
+            localStorage.setItem('guestUser',user);
+            localStorage.setItem('guestPass',pass);
+            document.getElementById('signupMsg').textContent='Guest account created! Use Login tab.';
+            document.getElementById('signupForm').reset();
         });
     </script>
 </body>
