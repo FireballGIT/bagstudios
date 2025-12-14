@@ -182,7 +182,7 @@
                     <div class="file-list" id="fileList"></div>
                 </div>
             </section>
-            <section id="server" class="section"><h1>Server Data</h1><pre id="serverPre">CPU: 42 % | MEM: 3.2 / 8 GB<br>Uptime: 12d 07h 53m</pre></section>
+            <section id="server" class="section"><h1>Server Data</h1><pre id="serverPre">CPU: 42 % | MEM: 3.2 / 8 GB\nUptime: 12d 07h 53m</pre></section>
         </main>
     </div>
 
@@ -206,51 +206,26 @@
         /* ----------  LOGIN / ROLE  ---------- */
         const menus = {
             guest:   ['home','crew','about','contact','projects'],
-            developer:['home','crew','about','contact','projects','analytics','upload'],
-            admin:   ['home','crew','about','contact','projects','analytics','upload','server']
+            developer:['home','crew','about','contact','projects','analytics','upload','badge'],
+            admin:   ['home','crew','about','contact','projects','analytics','upload','badge','server']
         };
-        const niceNames = {home:'Overview',crew:'Crew',about:'About',contact:'Contact',projects:'Projects',analytics:'Analytics',upload:'Upload',server:'Server Data'};
+        const niceNames = {home:'Overview',crew:'Crew',about:'About',contact:'Contact',projects:'Projects',analytics:'Analytics',upload:'Upload',badge:'Badge',server:'Server Data'};
 
-        function toggleLoginMenu(){
-            document.getElementById('loginDropdown').classList.toggle('show');
-        }
-        function login(role){
-            const remember = confirm('Remember me on this device?');
-            sessionStorage.setItem('role',role);
-            if(remember) localStorage.setItem('role',role);
-            buildNav(role);
-            document.getElementById('loginWidget').style.display='none';
-            document.getElementById('userBadge').style.display='flex';
-            document.getElementById('userLabel').textContent=role.charAt(0).toUpperCase()+role.slice(1);
-            toggleLoginMenu();
-            /* redirect to login.html */
-            location.href='login.html';
-        }
-        function logout(){
-            sessionStorage.removeItem('role');
-            localStorage.removeItem('role');
-            location.reload();
-        }
-        function buildNav(role='guest'){
-            const nav = document.getElementById('navMenu');
-            nav.innerHTML='';
-            menus[role].forEach(id=>{
-                const li=document.createElement('li');li.className='nav-item';
-                li.innerHTML=`<a href="#" class="nav-link ${id==='home'?'active':''}" onclick="showSection('${id}')">${niceNames[id]}</a>`;
-                nav.appendChild(li);
-            });
-            const li=document.createElement('li');li.className='nav-item';
-            li.innerHTML=`<a href="https://reddit.com/r/bagstudios" class="nav-link reddit-link" target="_blank">Reddit</a>`;
-            nav.appendChild(li);
-        }
+        /* ----------  LOCKOUT + COPY/PASTE BLOCK  ---------- */
+        let failCount = 0;
+        const MAX_FAIL = 3;
+        function isLocked(){return sessionStorage.getItem('locked')==='true';}
+        function lock(){sessionStorage.setItem('locked','true');alert('Account locked. Refresh the page to retry.');}
+        document.addEventListener('copy',e=>{if(!isLocked()){lock();alert('Copy detected. Account locked.');}});
+        document.addEventListener('paste',e=>{if(!isLocked()){lock();alert('Paste detected. Account locked.');}});
 
-        /* ----------  ENCRYPTED USER DATA  ---------- */
+        /* ----------  ENCRYPTED USER DATA (SHA-256)  ---------- */
         (function(){
-            const raw = JSON.stringify({username:'Fireball',badge:'Administrator',password:'bagstudios25!'});
+            const raw = JSON.stringify({username:'Fireball',badge:'Admin',password:'be907206809759ecc573e74205c14e6205e68df0e2a9c1d4530065cf4c5fc2a2'});
             const key = 'BAGStudiosKey2025';
             let enc='';
             for(let i=0;i<raw.length;i++) enc+=String.fromCharCode(raw.charCodeAt(i)^key.charCodeAt(i%key.length));
-            window.userDataEnc = btoa(enc);   // store globally if you need it elsewhere
+            window.userDataEnc = btoa(enc);
         })();
 
         /* ----------  BADGE SECTION  ---------- */
@@ -272,8 +247,6 @@
             const item = document.createElement('div');
             item.textContent = `📄 ${file.name}  (${(file.size/1024).toFixed(1)} KB)`;
             list.appendChild(item);
-
-            // store in sessionStorage (visible in Server Data)
             let uploaded = JSON.parse(sessionStorage.getItem('uploadedFiles')||'[]');
             uploaded.push({name:file.name,size:file.size,date:new Date().toISOString()});
             sessionStorage.setItem('uploadedFiles',JSON.stringify(uploaded));
@@ -286,6 +259,40 @@
             if(!uploaded.length) txt+='   (none)';
             else uploaded.forEach(f=>txt+=`   • ${f.name}  ${(f.size/1024).toFixed(1)} KB  ${f.date}\n`);
             box.textContent = txt;
+        }
+
+        /* ----------  LOGIN DROPDOWN  ---------- */
+        function toggleLoginMenu(){
+            document.getElementById('loginDropdown').classList.toggle('show');
+        }
+        function login(role){
+            if(isLocked()){alert('Account is locked. Refresh to retry.');return;}
+            const remember = confirm('Remember me on this device?');
+            sessionStorage.setItem('role',role);
+            if(remember) localStorage.setItem('role',role);
+            buildNav(role);
+            document.getElementById('loginWidget').style.display='none';
+            document.getElementById('userBadge').style.display='flex';
+            document.getElementById('userLabel').textContent=role.charAt(0).toUpperCase()+role.slice(1);
+            toggleLoginMenu();
+            location.href='login.html';
+        }
+        function logout(){
+            sessionStorage.removeItem('role');
+            localStorage.removeItem('role');
+            location.reload();
+        }
+        function buildNav(role='guest'){
+            const nav = document.getElementById('navMenu');
+            nav.innerHTML='';
+            menus[role].forEach(id=>{
+                const li=document.createElement('li');li.className='nav-item';
+                li.innerHTML=`<a href="#" class="nav-link ${id==='home'?'active':''}" onclick="showSection('${id}')">${niceNames[id]}</a>`;
+                nav.appendChild(li);
+            });
+            const li=document.createElement('li');li.className='nav-item';
+            li.innerHTML=`<a href="https://reddit.com/r/bagstudios" class="nav-link reddit-link" target="_blank">Reddit</a>`;
+            nav.appendChild(li);
         }
 
         /* ----------  PAGE LOAD  ---------- */
